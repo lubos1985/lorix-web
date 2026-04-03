@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lorix AI Automation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2d7a22;
+      --green-dark: #1a5018;
+      --green-light: #edf7eb;
+      --green-border: #b6ddb1;
+      --text: #111111;
+      --text-muted: #555555;
+      --bg: #ffffff;
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 { font-family: 'Syne', sans-serif; }
+
+    /* ── FADE IN ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    .hero-logo-bar {
+      padding: 24px 32px;
+      position: relative;
+      z-index: 10;
+    }
+    .hero-logo-bar img {
+      max-height: 48px;
+      width: auto;
+      display: block;
+    }
+
+    .hero-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 32px 80px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .hero-inner {
+      max-width: 720px;
+      text-align: center;
+    }
+
+    .hero-inner h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+
+    .hero-inner h1 span { color: var(--green); }
+
+    .hero-inner p {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 40px;
+      max-width: 580px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      background: var(--green);
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 14px 32px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(45,122,34,0.25);
+    }
+    .btn-primary:hover {
+      background: var(--green-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(45,122,34,0.35);
+    }
+
+    /* animated background */
+    .geo-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .geo-bg span {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--green);
+      opacity: 0.055;
+      animation: floatShape 18s ease-in-out infinite;
+    }
+    .geo-bg span:nth-child(1) { width: 340px; height: 340px; top: -80px; left: -100px; animation-duration: 20s; }
+    .geo-bg span:nth-child(2) { width: 220px; height: 220px; top: 60%; right: -60px; animation-duration: 15s; animation-delay: -4s; }
+    .geo-bg span:nth-child(3) { width: 160px; height: 160px; bottom: 10%; left: 30%; animation-duration: 22s; animation-delay: -8s; }
+    .geo-bg span:nth-child(4) { width: 80px; height: 80px; top: 40%; left: 10%; animation-duration: 17s; animation-delay: -2s; border-radius: 12px; }
+    .geo-bg span:nth-child(5) { width: 120px; height: 120px; top: 20%; right: 20%; animation-duration: 25s; animation-delay: -11s; border-radius: 16px; }
+
+    @keyframes floatShape {
+      0%   { transform: translate(0, 0) rotate(0deg); }
+      33%  { transform: translate(20px, -30px) rotate(8deg); }
+      66%  { transform: translate(-15px, 20px) rotate(-5deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+
+    /* ── SECTIONS ── */
+    section { padding: 80px 32px; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 48px;
+      line-height: 1.25;
+    }
+
+    /* ── PROBLEMY ── */
+    #problemy { background: #f9fafb; }
+
+    .problems-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 28px;
+    }
+
+    .problem-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 24px;
+      background: var(--bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .problem-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+
+    .problem-icon {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      background: var(--green-light);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+    }
+    .problem-icon svg { width: 22px; height: 22px; }
+
+    .problem-item h3 {
+      font-size: 0.98rem;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--text);
+    }
+
+    /* ── AKO PRACUJEME ── */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+    }
+
+    .step-card {
+      background: var(--bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 36px 28px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .step-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.13);
+    }
+
+    .step-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--green);
+      margin-bottom: 16px;
+    }
+
+    .step-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--green-light);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+      margin-bottom: 20px;
+    }
+    .step-icon svg { width: 24px; height: 24px; }
+
+    .step-card h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .step-card p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    /* ── PRECO LORIX ── */
+    #preco { background: #f9fafb; }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+    }
+
+    .benefit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 28px 24px;
+      background: var(--bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .benefit-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+
+    .benefit-check {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      background: var(--green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+    .benefit-check svg { width: 15px; height: 15px; color: #fff; }
+
+    .benefit-item h3 {
+      font-size: 0.97rem;
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--text);
+    }
+
+    /* ── ČÍSLA ── */
+    #cisla {
+      background: var(--green-dark);
+    }
+
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 48px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 800;
+      color: #6dde5e;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.8);
+      font-weight: 400;
+    }
+
+    /* ── FORMULÁR ── */
+    #kontakt { background: var(--bg); }
+
+    .form-wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      background: var(--green-light);
+      border: 1.5px solid var(--green-border);
+      border-radius: 16px;
+      padding: 40px 36px;
+    }
+
+    .form-wrap h2 {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    input, select, textarea {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.97rem;
+      color: var(--text);
+      background: var(--bg);
+      border: 1.5px solid var(--green-border);
+      border-radius: 6px;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(45,122,34,0.12);
+    }
+
+    textarea { resize: vertical; min-height: 110px; }
+
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .success-msg {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .success-msg .success-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .success-msg .success-icon svg { width: 32px; height: 32px; color: #fff; }
+    .success-msg h3 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 8px;
+    }
+    .success-msg p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #1c1c1c;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+    }
+    footer img {
+      max-height: 40px;
+      width: auto;
+      filter: brightness(0) invert(1);
+      opacity: 0.85;
+    }
+    footer p {
+      color: rgba(255,255,255,0.45);
+      font-size: 0.88rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      section { padding: 60px 20px; }
+      .hero-logo-bar { padding: 20px; }
+      .hero-content { padding: 24px 20px 60px; }
+      .form-row { grid-template-columns: 1fr; }
+      .form-wrap { padding: 28px 20px; }
+      .stats-row { gap: 36px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ HERO ══ -->
+  <section id="hero">
+    <div class="geo-bg">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="hero-logo-bar">
+      <img src="./lorix_logo.jpeg" alt="Lorix AI Automation logo" />
+    </div>
+    <div class="hero-content">
+      <div class="hero-inner fade-in">
+        <h1>AI automatizácie šité<br /><span>presne na vás.</span></h1>
+        <p>Zbavte sa opakujúcich sa manuálnych úloh. Lorix vám navrhne, nastaví a spustí AI riešenie – bez nutnosti interného IT tímu.</p>
+        <a href="#kontakt" class="btn-primary">Chcem bezplatnú konzultáciu</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PROBLÉMY ══ -->
+  <section id="problemy">
+    <div class="section-inner">
+      <p class="section-label fade-in">Problémy ktoré riešime</p>
+      <h2 class="section-title fade-in">Poznáte tieto výzvy?</h2>
+      <div class="problems-grid">
+        <div class="problem-item fade-in">
+          <div class="problem-icon"><i data-lucide="refresh-cw"></i></div>
+          <h3>Opakujúce sa manuálne úlohy</h3>
+        </div>
+        <div class="problem-item fade-in">
+          <div class="problem-icon"><i data-lucide="alert-triangle"></i></div>
+          <h3>Chyby pri prepise a spracovaní dát</h3>
+        </div>
+        <div class="problem-item fade-in">
+          <div class="problem-icon"><i data-lucide="message-circle"></i></div>
+          <h3>Pomalá zákaznícka komunikácia a onboarding</h3>
+        </div>
+        <div class="problem-item fade-in">
+          <div class="problem-icon"><i data-lucide="users"></i></div>
+          <h3>Zamestnanci viazaní na rutinné procesy</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ AKO PRACUJEME ══ -->
+  <section id="ako">
+    <div class="section-inner">
+      <p class="section-label fade-in">Ako pracujeme</p>
+      <h2 class="section-title fade-in">Tri kroky k automatizácii</h2>
+      <div class="steps-grid">
+        <div class="step-card fade-in">
+          <p class="step-num">KROK 01</p>
+          <div class="step-icon"><i data-lucide="search"></i></div>
+          <h3>Analýza procesov</h3>
+          <p>Dôkladne zmapujeme vaše aktuálne procesy a identifikujeme miesta, kde AI prináša najväčší prínos. Nepredpokladáme – pýtame sa a počúvame.</p>
+        </div>
+        <div class="step-card fade-in">
+          <p class="step-num">KROK 02</p>
+          <div class="step-icon"><i data-lucide="cpu"></i></div>
+          <h3>Návrh automatizácie</h3>
+          <p>Na základe analýzy navrhneme konkrétne AI riešenie šité na mieru vašej firmy. Žiadne generické šablóny – len to, čo skutočne funguje u vás.</p>
+        </div>
+        <div class="step-card fade-in">
+          <p class="step-num">KROK 03</p>
+          <div class="step-icon"><i data-lucide="rocket"></i></div>
+          <h3>Implementácia &amp; podpora</h3>
+          <p>Riešenie nasadíme, otestujeme a zaškolíme váš tím. Zostávame k dispozícii aj po spustení – vaše výsledky sú naša priorita.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PREČO LORIX ══ -->
+  <section id="preco">
+    <div class="section-inner">
+      <p class="section-label fade-in">Prečo Lorix</p>
+      <h2 class="section-title fade-in">Čo nás odlišuje</h2>
+      <div class="benefits-grid">
+        <div class="benefit-item fade-in">
+          <div class="benefit-check"><i data-lucide="check"></i></div>
+          <h3>Riešenia na mieru – žiadne generické nástroje</h3>
+        </div>
+        <div class="benefit-item fade-in">
+          <div class="benefit-check"><i data-lucide="check"></i></div>
+          <h3>Rýchla implementácia – výsledky do 4 týždňov</h3>
+        </div>
+        <div class="benefit-item fade-in">
+          <div class="benefit-check"><i data-lucide="check"></i></div>
+          <h3>Bez nutnosti IT oddelenia</h3>
+        </div>
+        <div class="benefit-item fade-in">
+          <div class="benefit-check"><i data-lucide="check"></i></div>
+          <h3>Merateľná návratnosť investície</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ČÍSLA ══ -->
+  <section id="cisla">
+    <div class="section-inner">
+      <div class="stats-row">
+        <div class="stat-item fade-in">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">automatizovaných procesov</div>
+        </div>
+        <div class="stat-item fade-in">
+          <div class="stat-number">3×</div>
+          <div class="stat-label">rýchlejší zákaznícky servis</div>
+        </div>
+        <div class="stat-item fade-in">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">individuálny prístup</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FORMULÁR ══ -->
+  <section id="kontakt">
+    <div class="section-inner">
+      <div class="form-wrap fade-in">
+        <h2>Dohodnite si bezplatnú konzultáciu</h2>
+        <form id="contact-form" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Meno a priezvisko</label>
+              <input type="text" id="name" name="name" placeholder="Ján Novák" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Firemný e-mail</label>
+              <input type="email" id="email" name="email" placeholder="jan@firma.sk" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Telefón</label>
+              <input type="tel" id="phone" name="phone" placeholder="+421 900 000 000" />
+            </div>
+            <div class="form-group">
+              <label for="size">Veľkosť firmy</label>
+              <select id="size" name="size">
+                <option value="">Vyberte…</option>
+                <option value="1-10">1 – 10 zamestnancov</option>
+                <option value="11-50">11 – 50 zamestnancov</option>
+                <option value="51-200">51 – 200 zamestnancov</option>
+                <option value="200+">200+ zamestnancov</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="problem">Opíšte váš problém</label>
+            <textarea id="problem" name="problem" placeholder="Stručne popíšte, s čím sa stretávate a čo by ste chceli automatizovať…"></textarea>
+          </div>
+          <button type="submit" class="btn-primary btn-submit">Odoslať požiadavku</button>
+        </form>
+        <div class="success-msg" id="success-msg">
+          <div class="success-icon"><i data-lucide="check"></i></div>
+          <h3>Ďakujeme!</h3>
+          <p>Ozveme sa vám do 24 hodín.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <img src="./lorix_logo.jpeg" alt="Lorix AI Automation" />
+    <p>© 2025 Lorix AI Automation</p>
+  </footer>
+
+  <script>
+    // Init Lucide icons
+    lucide.createIcons();
+
+    // Intersection Observer for fade-in
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
+
+    // Form submit mock
+    document.getElementById('contact-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      this.style.display = 'none';
+      const msg = document.getElementById('success-msg');
+      msg.style.display = 'block';
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

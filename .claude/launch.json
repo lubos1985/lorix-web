@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Static File Server (serve)",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", ".", "--listen", "3000", "--no-clipboard"],
+      "port": 3000
+    },
+    {
+      "name": "Static File Server (http-server)",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["http-server", ".", "-p", "8080", "--cors"],
+      "port": 8080
+    }
+  ]
+}
