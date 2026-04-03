@@ -58,6 +58,8 @@
       padding: 24px 32px;
       position: relative;
       z-index: 10;
+      display: flex;
+      justify-content: flex-start;
     }
     .hero-logo-bar img {
       max-height: 48px;
@@ -459,7 +461,7 @@
     /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
       section { padding: 60px 20px; }
-      .hero-logo-bar { padding: 20px; }
+      .hero-logo-bar { padding: 20px; justify-content: center; }
       .hero-content { padding: 24px 20px 60px; }
       .form-row { grid-template-columns: 1fr; }
       .form-wrap { padding: 28px 20px; }
